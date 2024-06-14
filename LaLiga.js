@@ -1,29 +1,50 @@
-async function getTeams() {
-    try {
-        const response = await fetch("http://localhost:3000/teams")
+class League{
+    static displayTeams(teams) {
+        teams.forEach(team => new Team(team))
+    }
+    static async getTeams() {
+        try {
+            const response = await fetch("http://localhost:3000/teams")
 
-        if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.statusText}`)
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`)
+            }
+
+            const data = await response.json()
+            this.displayTeams(data.teams)
+        } catch (error) {
+            console.error('Fetch error: ', error)
+            alert(`Error: ${error.message}`)
         }
+    }
 
-        const data = await response.json()
-        displayTeams(data.teams)
-    } catch (error) {
-        console.error('Fetch error: ', error)
-        alert(`Error: ${error.message}`)
+}
+class Team{
+    constructor(element){
+        this.element = element
+        this.addEachTeam()
+        this.addListeners()
+    }
+    addEachTeam(){
+        const teamsContainer = document.getElementById('teams')
+        const teamDiv = document.createElement('div')
+            teamDiv.className = 'team'
+            teamDiv.innerHTML += `<img src = "${this.element.crest}" alt="emblem">"${this.element.name}"`
+            teamsContainer.appendChild(teamDiv)
+            this.teamDiv = teamDiv
+    }
+    addListeners(){
+        this.teamDiv.addEventListener('click', () => {
+            const squadEl = document.querySelector('#squad')
+            const sqd = this.element.squad
+            sqd.forEach(player => alert(player.name))
+            
+        })
     }
 }
-
-function displayTeams(teams) {
-    const teamsContainer = document.getElementById('teams')
-    teamsContainer.innerHTML = ''
-
-    teams.forEach(team => {
-        const teamDiv = document.createElement('div')
-        teamDiv.className = 'team'
-        teamDiv.innerHTML = `<img src = "${team.crest}" alt="emblem">"${team.name}"`
-        teamsContainer.appendChild(teamDiv)
-    })
+class Player{
+    constructor(element){
+        this.element = element
+    }
 }
-
-getTeams()
+League.getTeams()
